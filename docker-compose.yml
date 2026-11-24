@@ -1,0 +1,21 @@
+services:
+  api:
+    build: .
+    image: exhibition-ticket-service:latest
+    container_name: exhibition-ticket-api
+    ports:
+      - "8000:8000"
+    environment:
+      # 数据库文件落在挂载卷内，容器重建后数据保留
+      DB_PATH: /data/exhibition.db
+    volumes:
+      - ticket-data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  ticket-data:
